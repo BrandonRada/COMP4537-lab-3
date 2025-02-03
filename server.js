@@ -11,7 +11,7 @@ http.createServer(function (req, res){
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
     
-    if(pathname === "/getDate" && query.name){
+    if(pathname === "/getDate/" && query.name){
         const serverTime = utils.getDate();
         const responseMessage = `<p style="color:blue;">${messages.greetingMessage.replace("%1", query.name)} ${serverTime}</p>`;
         res.end(responseMessage);
