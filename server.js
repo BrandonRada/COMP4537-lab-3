@@ -1,5 +1,6 @@
 const http = require('http');
 const url = require('url');
+const path = require('path');
 const utils = require('./modules/utils');
 const messages = require('./lang/messages/en/user');
 const fs = require('fs');
@@ -28,76 +29,82 @@ const FILE_PATH = path.join(__dirname, 'file.txt');
 //     console.log(`Server running and listening on port ${PORT}`);
 // });
 
-// Class to handle file operations (reading and appending)
-class FileHandler {
-    static appendToFile(text, callback) {
-        fs.appendFile(FILE_PATH, text + '\n', (err) => {
-            callback(err);
-        });
-    }
-
-    static readFile(callback) {
-        fs.readFile(FILE_PATH, 'utf8', (err, data) => {
-            callback(err, data);
-        });
+class DateService {
+    static getDate() {
+        return utils.getDate().toString(); // Using getDate() from util.js
     }
 }
 
-// Class to handle incoming HTTP requests
-class RequestHandler {
-    static handleRequest(req, res) {
-        const parsedURL = url.parse(req.url, true);
-        const pathname = parsedURL.pathname;
-        const query = parsedURL.query;
-
-        if (pathname.startsWith('/COMP4537/labs/3/writeFile')) {
-            if (query.text) {
-                FileHandler.appendToFile(query.text, (err) => {
-                    if (err) {
-                        res.writeHead(500, { 'Content-Type': 'text/plain' });
-                        res.end('Error writing to file');
-                    } else {
-                        res.writeHead(200, { 'Content-Type': 'text/plain' });
-                        res.end('Text appended successfully');
-                    }
-                });
+class FileService {
+    static appendToFile(filePath, text, res) {
+        fs.appendFile(filePath, text + '\n', (err) => {
+            if (err) {
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Error writing to file');
             } else {
-                res.writeHead(400, { 'Content-Type': 'text/plain' });
-                res.end('Missing text query parameter');
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end('Text written successfully');
             }
-        } 
-        else if (pathname.startsWith('/COMP4537/labs/3/readFile')) {
-            FileHandler.readFile((err, data) => {
-                if (err) {
-                    res.writeHead(404, { 'Content-Type': 'text/plain' });
-                    res.end(`404 - File not found: ${FILE_PATH}`);
-                } else {
-                    res.writeHead(200, { 'Content-Type': 'text/plain' });
-                    res.end(data);
-                }
-            });
-        } 
-        else {
-            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.end('404 - Not Found');
-        }
+        });
+    }
+
+    static readFile(filePath, res) {
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Error reading file');
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end(data);
+            }
+        });
     }
 }
 
-// Main Server class to create and run the server
 class Server {
     constructor(port) {
         this.port = port;
     }
 
     start() {
-        const server = http.createServer(RequestHandler.handleRequest);
+        const server = http.createServer((req, res) => this.handleRequest(req, res));
         server.listen(this.port, () => {
-            console.log(`Server running on port ${this.port}`);
+            console.log(`Server running on http://localhost:${this.port}`);
         });
+    }
+
+    handleRequest(req, res) {
+        const parsedUrl = url.parse(req.url, true);
+        const { pathname, query } = parsedUrl;
+
+        if (pathname === '/getDate' && query.name) {
+            this.handleGetDate(query.name, res);
+        } else if (pathname === '/writeFile' && query.text) {
+            this.handleWriteFile(query.text, res);
+        } else if (pathname.startsWith('/readFile')) {
+            this.handleReadFile(res);
+        } else {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end('404 Not Found');
+        }
+    }
+
+    handleGetDate(name, res) {
+        const currentTime = DateService.getDate();
+        const message = `<p style="color:blue">Hello ${name}, What a beautiful day! Server current date and time is ${currentTime}</p>`;
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(message);
+    }
+
+    handleWriteFile(text, res) {
+        FileService.appendToFile(FILE_PATH, text, res);
+    }
+
+    handleReadFile(res) {
+        FileService.readFile(FILE_PATH, res);
     }
 }
 
 // Start the server
-const myServer = new Server(PORT);
-myServer.start();
+const app = new Server(PORT);
+app.start();
