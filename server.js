@@ -4,7 +4,7 @@ const utils = require('./modules/utils');
 const messages = require('./lang/messages/en/user');
 const PORT = 8080;
 
-http.createServer(function (req, res){
+http.createServer((req, res) =>{
     const parsedURL = url.parse(req.url, true);
     const pathname = parsedURL.pathname;
     const query = parsedURL.query;
