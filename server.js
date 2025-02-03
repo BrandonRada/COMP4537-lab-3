@@ -55,10 +55,10 @@ class Server {
         const parsedUrl = url.parse(req.url, true);
         const { pathname, query } = parsedUrl;
 
-        if (pathname.startsWith('/COMP4537/labs/3/readFile/')) {
+        if (pathname.startsWith('/readFile/')) {
             const fileName = pathname.split('/').pop(); // Extract the file name from URL
             this.handleReadFile(fileName, res);
-        } else if (pathname === '/COMP4537/labs/3/writeFile' && query.text) {
+        } else if (pathname === '/writeFile/' && query.text) {
             this.handleWriteFile(query.text, res);
         } else if (pathname === '/getDate/' && query.name) {
             this.handleGetDate(query.name, res);
