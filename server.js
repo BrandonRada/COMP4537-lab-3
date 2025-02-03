@@ -7,31 +7,9 @@ const fs = require('fs');
 const PORT = 8080;
 const FILE_PATH = path.join(__dirname, 'file.txt');
 
-// const server = http.createServer((req, res) =>{
-//     const parsedURL = url.parse(req.url, true);
-//     const pathname = parsedURL.pathname;
-//     const query = parsedURL.query;
-
-    
-    
-//     if(pathname === "/getDate/" && query.name){
-//         const serverTime = utils.getDate().toString();
-//         const responseMessage = `<p style="color:blue;">${messages.greetingMessage.replace("%1", query.name)} ${serverTime}</p>`;
-//         res.writeHead(200, { 'Content-Type': 'text/html' });
-//         res.end(responseMessage);
-//     } else{
-//         res.writeHead(404, {'Content-Type': 'text/plain'});
-//         res.end("404 - Not Found");
-//     }
-// });
-
-// server.listen(PORT, () =>{
-//     console.log(`Server running and listening on port ${PORT}`);
-// });
-
 class DateService {
     static getDate() {
-        return utils.getDate().toString(); // Using getDate() from util.js
+        return utils.getDate().toString();
     }
 }
 
@@ -77,12 +55,13 @@ class Server {
         const parsedUrl = url.parse(req.url, true);
         const { pathname, query } = parsedUrl;
 
-        if (pathname === '/getDate/' && query.name) {
-            this.handleGetDate(query.name, res);
-        } else if (pathname === '/writeFile/' && query.text) {
+        if (pathname.startsWith('/COMP4537/labs/3/readFile/')) {
+            const fileName = pathname.split('/').pop(); // Extract the file name from URL
+            this.handleReadFile(fileName, res);
+        } else if (pathname === '/COMP4537/labs/3/writeFile' && query.text) {
             this.handleWriteFile(query.text, res);
-        } else if (pathname.startsWith('/readFile')) {
-            this.handleReadFile(res);
+        } else if (pathname === '/getDate/' && query.name) {
+            this.handleGetDate(query.name, res);
         } else {
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end('404 Not Found');
@@ -100,8 +79,18 @@ class Server {
         FileService.appendToFile(FILE_PATH, text, res);
     }
 
-    handleReadFile(res) {
-        FileService.readFile(FILE_PATH, res);
+    handleReadFile(fileName, res) {
+        const filePath = path.join(__dirname, fileName);
+
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end(`404 Not Found: ${fileName}`);
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end(data); // Return file content to display in the browser
+            }
+        });
     }
 }
 
