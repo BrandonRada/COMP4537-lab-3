@@ -9,11 +9,12 @@ const server = http.createServer((req, res) =>{
     const pathname = parsedURL.pathname;
     const query = parsedURL.query;
 
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    
     
     if(pathname === "/getDate/" && query.name){
         const serverTime = utils.getDate();
         const responseMessage = `<p style="color:blue;">${messages.greetingMessage.replace("%1", query.name)} ${serverTime}</p>`;
+        res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(responseMessage);
     } else{
         res.writeHead(404, {'Content-Type': 'text/plain'});
