@@ -79,7 +79,7 @@ class Server {
 
         if (pathname === '/getDate/' && query.name) {
             this.handleGetDate(query.name, res);
-        } else if (pathname === '/writeFile' && query.text) {
+        } else if (pathname === '/writeFile/' && query.text) {
             this.handleWriteFile(query.text, res);
         } else if (pathname.startsWith('/readFile')) {
             this.handleReadFile(res);
