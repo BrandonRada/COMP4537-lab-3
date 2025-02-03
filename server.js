@@ -21,6 +21,6 @@ const server = http.createServer((req, res) =>{
     }
 });
 
-server.listen(PORT =>{
+server.listen(PORT, () =>{
     console.log(`Server running and listening on port ${PORT}`);
 });
