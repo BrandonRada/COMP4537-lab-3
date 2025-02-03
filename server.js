@@ -16,8 +16,8 @@ const server = http.createServer((req, res) =>{
         const responseMessage = `<p style="color:blue;">${messages.greetingMessage.replace("%1", query.name)} ${serverTime}</p>`;
         res.end(responseMessage);
     } else{
-        res.writeHead(404, {'Content-Type': 'text/html'});
-        res.end("<p style='color:red;'> 404 - Not Found</p>");
+        res.writeHead(404, {'Content-Type': 'text/plain'});
+        res.end("404 - Not Found");
     }
 });
 
