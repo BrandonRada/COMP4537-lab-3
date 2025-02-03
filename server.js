@@ -12,7 +12,7 @@ const server = http.createServer((req, res) =>{
     
     
     if(pathname === "/getDate/" && query.name){
-        const serverTime = utils.getDate();
+        const serverTime = utils.getDate().toString();
         const responseMessage = `<p style="color:blue;">${messages.greetingMessage.replace("%1", query.name)} ${serverTime}</p>`;
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(responseMessage);
