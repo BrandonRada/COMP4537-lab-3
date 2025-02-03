@@ -4,7 +4,7 @@ const utils = require('./modules/utils');
 const messages = require('./lang/messages/en/user');
 const PORT = 8080;
 
-http.createServer((req, res) =>{
+const server = http.createServer((req, res) =>{
     const parsedURL = url.parse(req.url, true);
     const pathname = parsedURL.pathname;
     const query = parsedURL.query;
@@ -19,5 +19,8 @@ http.createServer((req, res) =>{
         res.writeHead(404, {'Content-Type': 'text/html'});
         res.end("<p style='color:red;'> 404 - Not Found</p>");
     }
-}).listen(PORT);
-console.log(`Server running and listening on port ${PORT}`);
+});
+
+server.listen(PORT =>{
+    console.log(`Server running and listening on port ${PORT}`);
+});
