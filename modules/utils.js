@@ -1,5 +1,9 @@
-function getDate(){
-    return `server current date and time is ${new Date().toString()}`;
-}
+// function getDate(){
+//     return `server current date and time is ${new Date().toString()}`;
+// }
 
-module.exports = {getDate};
+// module.exports = {getDate};
+
+exports.getDate = function () {
+    return new Date();
+};
