@@ -69,7 +69,7 @@ class Server {
     start() {
         const server = http.createServer((req, res) => this.handleRequest(req, res));
         server.listen(this.port, () => {
-            console.log(`Server running on http://localhost:${this.port}`);
+            console.log(`Server running on port :${this.port}`);
         });
     }
 
@@ -77,7 +77,7 @@ class Server {
         const parsedUrl = url.parse(req.url, true);
         const { pathname, query } = parsedUrl;
 
-        if (pathname === '/getDate' && query.name) {
+        if (pathname === '/getDate/' && query.name) {
             this.handleGetDate(query.name, res);
         } else if (pathname === '/writeFile' && query.text) {
             this.handleWriteFile(query.text, res);
